@@ -168,3 +168,22 @@ channels = 1
 model = DCUNet(IMG_HEIGHT,IMG_WIDTH,channels)
 model.compile(optimizer=Adam(learning_rate = 1e-3),  loss='binary_crossentropy', metrics='accuracy')
 model.summary()
+
+# data augmentation
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# Create an instance of the ImageDataGenerator class
+data_gen = ImageDataGenerator(
+    rotation_range=45,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest')
+
+# Use the flow() method to generate batches of augmented images and labels
+data_gen.flow(x_train, y_train, batch_size=32)
+# Use the fit_generator() method to train the model using the generator
+model.fit_generator(data_gen.flow(x_train, y_train, batch_size=32),
+                    steps_per_epoch=len(x_train) / 32,
+                    epochs=10)
